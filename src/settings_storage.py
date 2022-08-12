@@ -1,7 +1,9 @@
 import json
-from .exceptions import CantLoadJsonException, SettingNotExistsException
 from pathlib import Path
 from typing import Any, Union
+
+from .exceptions import CantLoadJsonException, SettingNotExistsException
+
 
 class SettingsStorage:
     """
@@ -10,9 +12,15 @@ class SettingsStorage:
     only by methods of this class.
     """
 
-    def __init__(self,settings_file_path: str) -> None:
-        self.__initial_json = """{"API": {}}"""
-        self.__api_setting_name = "API"
+    def __init__(self, settings_file_path: str, settings_keys: dict[str, str]) -> None:
+        # __settings_keys contins dict key names stored in file
+        # It defines rules how to store settings
+        self.__settings_keys = settings_keys
+        
+        self.__initial_json = json.dumps({
+            self.__settings_keys["api_keys"] : {}
+        })
+        
         self._file_path = ""
         self._settings = {}
         
@@ -68,7 +76,7 @@ class SettingsStorage:
     
     def get_api_key(self, key_name: str) -> Union[str, None]:
         """Returns specific api key if exists or None if not"""
-        api_keys = self.get(self.__api_setting_name)
+        api_keys = self.get(self.__settings_keys["api_keys"])
         if key_name not in api_keys:
             return None
         
@@ -76,7 +84,7 @@ class SettingsStorage:
     
     def set_api_key(self, key_name: str, key_value: str) -> None:
         """Sets specific api key"""
-        api_keys = self.get(self.__api_setting_name)
+        api_keys = self.get(self.__settings_keys["api_keys"])
         api_keys[key_name] = key_value
-        self.set(self.__api_setting_name, api_keys)
+        self.set(self.__settings_keys["api_keys"], api_keys)
         

@@ -13,7 +13,8 @@ def setup():
 
 def main():
     setup()
-    settings = SettingsStorage(config.SETTINGS_FILE_PATH)
+    settings = SettingsStorage(config.SETTINGS_FILE_PATH, config.SETTINGS_KEYS)
+    print(settings.get_api_key(config.SETTINGS_KEYS["api_openweather_key"]))
     geojs = GeoJsLocationEngine()
     coords = geojs.get_current_coords()
     print(coords)
